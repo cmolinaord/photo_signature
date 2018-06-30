@@ -32,11 +32,11 @@ hs1 = int(ws1 * hs0 / ws0)
 roi_w = int(roi_margin_w * ws1)
 roi_h = int(roi_margin_h * hs1)
 
-corner 			= np.zeros((4,roi_h,roi_w,3))
-corner[0,:,:,:] = photo[0:roi_h,	0:roi_w,:]
-corner[1,:,:,:] = photo[-roi_h-1:-1,	0:roi_w,:]
-corner[2,:,:,:] = photo[0:roi_h, 	-roi_w-1:-1,:]
-corner[3,:,:,:] = photo[-roi_h-1:-1, 	-roi_w-1:-1,:]
+corner	= np.zeros((4,	roi_h,			roi_w,			3))
+corner[0,:,:,:] = photo[0:roi_h,		0:roi_w,		:]
+corner[1,:,:,:] = photo[-roi_h-1:-1,	0:roi_w,		:]
+corner[2,:,:,:] = photo[0:roi_h, 		-roi_w-1:-1,	:]
+corner[3,:,:,:] = photo[-roi_h-1:-1, 	-roi_w-1:-1,	:]
 
 bright 		= np.zeros(4)
 contrast 	= np.zeros(4)
@@ -68,7 +68,28 @@ cv.imshow("Photo",photo)
 
 photo_new = photo
 
-photo_new[-hs1-1:-1,0:ws1,:] = photo[-hs1-1:-1,0:ws1,:] - sign*bright[0]/256*0.8
+sig_l	= range(0 		+ int((roi_margin_w - 1) * 0.5 * roi_w),
+				ws1 	+ int((roi_margin_w - 1) * 0.5 * roi_w))
+
+sig_r 	= range(-ws1 	- int((roi_margin_w - 1) * 0.5 * roi_w),
+				0 		- int((roi_margin_w - 1) * 0.5 * roi_w))
+
+sig_u 	= range(0		+ int((roi_margin_h - 1) * 0.5 * roi_h),
+				hs1 	+ int((roi_margin_h - 1) * 0.5 * roi_h))
+
+sig_d 	= range(-hs1 	- int((roi_margin_h - 1) * 0.5 * roi_h),
+				0 		- int((roi_margin_h - 1) * 0.5 * roi_h))
+
+if best_corner == 0:
+	nx, ny = np.meshgrid(sig_l,sig_u)
+elif best_corner == 1:
+	nx, ny = np.meshgrid(sig_l,sig_d)
+elif best_corner == 2:
+	nx, ny = np.meshgrid(sig_r,sig_u)
+else:
+	nx, ny = np.meshgrid(sig_r,sig_d)
+
+photo_new[ny,nx,:] = photo[ny,nx,:] - sign*bright[0]/256*0.8
 
 cv.imshow("Photo_signed",photo_new)
 
