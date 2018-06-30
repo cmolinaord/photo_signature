@@ -11,6 +11,9 @@ import numpy as np
 import cv2 as cv
 import tools as tool
 
+# Opacity multiplier of the signature
+opacity = 0.5
+
 # Input values
 reduc = 0.16  # subimage relative width
 roi_margin_h = 2
@@ -22,7 +25,7 @@ filename = args[1]
 photo = cv.imread(filename)
 h, w, bbp = photo.shape
 
-sign = cv.imread("signature/cmolina.png")
+sign = cv.imread("signature/cmolina.png",-1)
 hs0, ws0, bbs = sign.shape
 
 # Sizes of rsized image
@@ -89,7 +92,18 @@ elif best_corner == 2:
 else:
 	nx, ny = np.meshgrid(sig_r,sig_d)
 
-photo_new[ny,nx,:] = photo[ny,nx,:] + sign*bright[best_corner]/256*0.1
+sign_rgb = sign[:,:,:3]
+sign_alpha = sign[:,:,-1]
+# The signature is expected to be black over a transparent background
+# This is good for bright corners
+# So we keep the same colors for bright corners, but we invert the colors, if the
+# corner is a darker one.
+if bright[best_corner] < 128:
+	sign_rgb = 255 - sign_rgb
+
+a = (sign_alpha * opacity)/256
+for c in range(3):
+	photo_new[ny,nx,c] = (1-a)*photo[ny,nx,c] + a*sign_rgb[:,:,c]
 
 cv.imshow("Photo_signed",photo_new)
 
