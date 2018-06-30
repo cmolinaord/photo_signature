@@ -9,7 +9,7 @@
 import sys
 import numpy as np
 import cv2 as cv
-import edge_detection as ed
+import tools as tool
 
 # Input values
 reduc = 0.16  # subimage relative width
@@ -40,23 +40,22 @@ corner[2,:,:,:] = photo[0:roi_h, 		-roi_w-1:-1,	:]
 corner[3,:,:,:] = photo[-roi_h-1:-1, 	-roi_w-1:-1,	:]
 
 bright 		= np.zeros(4)
-contrast 	= np.zeros(4)
-ratio 		= np.zeros(4)
+edge_contr 	= np.zeros(4)
 
 # Analyze corners
 for k in range(0,4):
 	# Convert to gray BGR -> Gray:  Y = 0.299R + 0.587G + 0.114B
 	b,g,r = cv.split(corner[k,:,:,:])
-	gray 	 	= 0.299*r + 0.587*g + 0.114*b
-	bright[k] 	= np.mean(gray)
-	contrast[k]	= np.std(gray)
-	ratio[k]	= contrast[k]/bright[k]*100
+	gray 	 		= 0.299*r + 0.587*g + 0.114*b
+	bright[k] 		= np.mean(gray)
+	edges 			= tool.edges(corner[k,:,:,:])
+	edge_contr[k]	= np.std(edges)
 	print("Corner", k)
-	print("  brightness =", bright[k])
-	print("  contrast =", contrast[k])
-	print("  relative =", ratio[k], "%")
+	print("  brightness =", round(bright[k], 2))
+	print("  Contrast of edges =", round(edge_contr[k], 2))
 
-best_corner = np.argmin(ratio)
+
+best_corner = np.argmin(edge_contr)
 print("The best corner to put your signature is", best_corner)
 
 # Scale factors
@@ -90,11 +89,11 @@ elif best_corner == 2:
 else:
 	nx, ny = np.meshgrid(sig_r,sig_d)
 
-photo_new[ny,nx,:] = photo[ny,nx,:] - sign*bright[0]/256*0.8
+photo_new[ny,nx,:] = photo[ny,nx,:] + sign*bright[best_corner]/256*0.1
 
 cv.imshow("Photo_signed",photo_new)
 
-gradient = ed.edges(photo_new)
+gradient = tool.edges(photo_new)
 cv.imshow("Gradient",gradient)
 
 key = cv.waitKey(0)
