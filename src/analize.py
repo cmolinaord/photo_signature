@@ -9,11 +9,12 @@
 import sys
 import numpy as np
 import cv2 as cv
+import edge_detection as ed
 
 # Input values
 reduc = 0.16  # subimage relative width
-roi_margin_h = 1.2
-roi_margin_w = 1.5
+roi_margin_h = 2
+roi_margin_w = 1.2
 
 args = sys.argv
 filename = args[1]
@@ -22,7 +23,7 @@ photo = cv.imread(filename)
 h, w, bbp = photo.shape
 
 sign = cv.imread("signature/cmolina.png")
-hs0, ws0 ,bbs = sign.shape
+hs0, ws0, bbs = sign.shape
 
 # Sizes of rsized image
 ws1 = int(reduc * w)
@@ -93,6 +94,8 @@ photo_new[ny,nx,:] = photo[ny,nx,:] - sign*bright[0]/256*0.8
 
 cv.imshow("Photo_signed",photo_new)
 
+gradient = ed.edges(photo_new)
+cv.imshow("Gradient",gradient)
 
 key = cv.waitKey(0)
 if key == 13:
