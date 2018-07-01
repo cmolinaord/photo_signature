@@ -64,8 +64,6 @@ def sign_image(photo_filename, sign_filename, size = 0.16, opacity = 0.8, hmargi
 	sign = cv.resize(sign,(0,0),fx=scale,fy=scale,interpolation=cv.INTER_LANCZOS4)
 	hs1, ws1 ,bbs = sign.shape
 
-	cv.imshow("Photo",photo)
-
 	photo_new = photo
 
 	sig_l	= range(0 		+ int((wmargin - 1) * 0.5 * roi_w),
