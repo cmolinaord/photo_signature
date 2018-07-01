@@ -1,5 +1,6 @@
 import numpy as np
 import cv2 as cv
+import os
 
 def edge_detect(photo):
 	# Convert to gray BGR -> Gray:  Y = 0.299R + 0.587G + 0.114B
@@ -8,7 +9,7 @@ def edge_detect(photo):
 	out = cv.Laplacian(gray,cv.CV_8U,ksize=5)
 	return out
 
-def sign_image(photo_filename, sign_filename, size = 0.16, opacity = 0.8, hmargin = 2, wmargin = 1.2):
+def sign_image(photo_filename, sign_filename, size = 0.16, opacity = 0.8, hmargin = 2, wmargin = 1.2, verbose=False):
 
 	photo = cv.imread(photo_filename)
 	h, w, bbp = photo.shape
@@ -34,20 +35,28 @@ def sign_image(photo_filename, sign_filename, size = 0.16, opacity = 0.8, hmargi
 	edge_contr 	= np.zeros(4)
 
 	# Analyze corners
-	for k in range(0,4):
+	for k in range(4):
 		# Convert to gray BGR -> Gray:  Y = 0.299R + 0.587G + 0.114B
 		b,g,r = cv.split(corner[k,:,:,:])
 		gray 	 		= 0.299*r + 0.587*g + 0.114*b
 		bright[k] 		= np.mean(gray)
 		edges 			= edge_detect(corner[k,:,:,:])
 		edge_contr[k]	= np.std(edges)
-		print("Corner", k)
-		print("  brightness =", round(bright[k], 2))
-		print("  Contrast of edges =", round(edge_contr[k], 2))
-
 
 	best_corner = np.argmin(edge_contr)
-	print("The best corner to put your signature is", best_corner)
+
+	if verbose:
+		print(photo_filename)
+		print('\t', end='')
+		for k in range(4):
+			print(k,"\t", end='')
+		print("Best\nB:\t", end='')
+		for k in range(4):
+			print(round(bright[k], 2),"\t", end='')
+		print(best_corner,"\nC:\t", end='')
+		for k in range(4):
+			print(round(edge_contr[k], 2),"\t", end='')
+		print("")
 
 	# Scale factors
 	scale = ws1 / ws0
@@ -94,3 +103,8 @@ def sign_image(photo_filename, sign_filename, size = 0.16, opacity = 0.8, hmargi
 		photo_new[ny,nx,c] = (1-a)*photo[ny,nx,c] + a*sign_rgb[:,:,c]
 
 	return photo_new
+
+def get_files(path):
+	for file in os.listdir(path):
+		if os.path.isfile(os.path.join(path, file)):
+			yield file
