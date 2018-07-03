@@ -9,7 +9,7 @@ def edge_detect(photo):
 	out = cv.Laplacian(gray,cv.CV_8U,ksize=5)
 	return out
 
-def sign_image(photo_filename, sign_filename, size = 0.16, opacity = 0.8, hmargin = 2, wmargin = 1.2, verbose=False):
+def sign_image(photo_filename, sign_filename, size = 0.16, hmargin = 2, wmargin = 1.2, opacity = [], verbose=False):
 
 	photo = cv.imread(photo_filename)
 	h, w, bbp = photo.shape
@@ -45,15 +45,21 @@ def sign_image(photo_filename, sign_filename, size = 0.16, opacity = 0.8, hmargi
 
 	best_corner = np.argmin(edge_contr)
 
+	# Compute auto opacity (only if opacity is not defined)
+	if opacity == []:
+		op_max = 0.9
+		op_min = 0.3
+		opacity = -2*(op_max-op_min)/256 * np.abs(bright[k]-128) + op_max
+
 	if verbose:
 		print(photo_filename)
 		print('\t', end='')
 		for k in range(4):
 			print(k,"\t", end='')
-		print("Best\nB:\t", end='')
+		print("Best\tOp\nB:\t", end='')
 		for k in range(4):
 			print(round(bright[k], 2),"\t", end='')
-		print(best_corner,"\nC:\t", end='')
+		print(best_corner,"\t",round(opacity,3),"\nC:\t", end='')
 		for k in range(4):
 			print(round(edge_contr[k], 2),"\t", end='')
 		print("")
