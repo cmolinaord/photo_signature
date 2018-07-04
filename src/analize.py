@@ -18,7 +18,7 @@ sign_path = args[2]
 photo = cv.imread(photo_path)
 cv.imshow("Photo_signed",photo)
 
-signed = tool.sign_image(photo_path,sign_path)
+signed = tool.sign_image(photo_path,sign_path,verbose=True)
 cv.imshow("Signed",signed)
 
 gradient = tool.edge_detect(signed)
