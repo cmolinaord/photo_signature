@@ -47,9 +47,7 @@ def sign_image(photo_filename, sign_filename, size = 0.16, hmargin = 2, wmargin 
 
 	# Compute auto opacity (only if opacity is not defined)
 	if opacity == []:
-		op_max = 0.9
-		op_min = 0.3
-		opacity = -2*(op_max-op_min)/256 * np.abs(bright[k]-128) + op_max
+		opacity = set_opacity(bright[k],0.3,0.9)
 
 	if verbose:
 		print(photo_filename)
@@ -112,3 +110,6 @@ def get_files(path):
 	for file in os.listdir(path):
 		if os.path.isfile(os.path.join(path, file)):
 			yield file
+
+def set_opacity(bright,min,max,res=256):
+	return np.round(-2*(max-min)/res * np.abs(bright-res/2) + max, 2)
