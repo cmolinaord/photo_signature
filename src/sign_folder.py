@@ -20,7 +20,7 @@ for filename in tool.get_files(folder_path):
 	signed = tool.sign_image(filename,sign_path,verbose=True)
 	signed_filename = dst_path + "/" + filename
 	cv.imwrite(signed_filename,signed)
-	cv.imshow(filename,signed)
+	#cv.imshow(filename,signed)
 
 t2 = t.time() - t1
 print(" ")
