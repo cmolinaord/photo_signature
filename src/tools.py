@@ -47,7 +47,7 @@ def sign_image(photo_filename, sign_filename, size = 0.16, hmargin = 2, wmargin 
 
 	# Compute auto opacity (only if opacity is not defined)
 	if opacity == []:
-		opacity = set_opacity(bright[k],0.3,0.9)
+		opacity = set_opacity(bright[best_corner],0.3,0.9)
 
 	if verbose:
 		print(photo_filename)
