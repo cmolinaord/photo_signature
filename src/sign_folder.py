@@ -25,3 +25,4 @@ for filename in tool.get_files(folder_path):
 t2 = t.time() - t1
 print(" ")
 print(num_photos,"photos processed in",round(t2,3),"s")
+print("Signed photos saved in ",dst_path)
