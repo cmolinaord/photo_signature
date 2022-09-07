@@ -29,7 +29,7 @@ for filename in tool.get_files(folder_path):
 
 	# Write EXIF on new image
 	im_new = Image.open(signed_filename)
-	image_new.save(signed_filename, 'JPEG', exif=exif_data)
+	im_new.save(signed_filename, 'JPEG', exif=exif_data)
 
 t2 = t.time() - t1
 print(" ")
